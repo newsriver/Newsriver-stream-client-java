@@ -22,9 +22,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by eliapalme on 03/09/16.
  */
-@ClientEndpoint
+@ClientEndpoint(configurator = NewsriverStreamClient.AuthClientConfigurator.class)
 public class NewsriverStreamClient {
 
+    private static final String ACCESS_TOKEN = "--YOUR-API-TOKEN-HERE--";
     private static final Logger logger = Logger.getLogger(NewsriverStreamClient.class);
     private static final ObjectMapper mapper = new ObjectMapper();
     private static final int NUMBER_OF_RECONNECT_RETRIES = 50;
@@ -122,6 +123,12 @@ public class NewsriverStreamClient {
     public void onClose(Session session, CloseReason closeReason) {
         logger.info(String.format("Stream %s close because of %s", session.getId(), closeReason));
     }
-
+    
+    public static class AuthClientConfigurator extends ClientEndpointConfig.Configurator {
+        @Override
+        public void beforeRequest(Map<String, List<String>> headers) {
+            headers.put("Authorization", Arrays.asList(ACCESS_TOKEN));
+        }
+    }
 
 }
